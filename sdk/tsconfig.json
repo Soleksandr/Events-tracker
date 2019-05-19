@@ -18,6 +18,7 @@
     "baseUrl": ".",
   },
   "include": [
-    "models"
+    "models",
+    "constants.ts"
   ]
 }

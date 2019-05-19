@@ -8,7 +8,8 @@
     "esnext",
     "interop",
     "devtools",
-    "bodyparser"
+    "bodyparser",
+    "formik"
   ],
   "eslint.autoFixOnSave": true,
   "eslint.validate": [

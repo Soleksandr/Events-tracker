@@ -1,13 +1,16 @@
 import React from "react";
+import { BrowserRouter } from "react-router-dom";
 import Router from "./routes/Router";
 import Layout from "./layout/Layout";
 import "./App.css";
 
 const App: React.FC = () => {
   return (
-    <Layout>
-      <Router />
-    </Layout>
+    <BrowserRouter>
+      <Layout>
+        <Router />
+      </Layout>
+    </BrowserRouter>
   );
 };
 

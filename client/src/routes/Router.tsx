@@ -1,15 +1,18 @@
 import * as React from "react";
-import { BrowserRouter, Route } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import Test from "./Test/Test-container";
+import { Login } from "./Login/Login";
 
 const Routes = {
-  test: "/test"
+  test: "/test",
+  login: "/login"
 };
 
 const Router = () => (
-  <BrowserRouter>
+  <Switch>
     <Route exact path={Routes.test} component={Test} />
-  </BrowserRouter>
+    <Route exact path={Routes.login} component={Login} />
+  </Switch>
 );
 
 export default Router;
