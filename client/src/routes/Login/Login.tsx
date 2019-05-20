@@ -1,19 +1,20 @@
 import React from "react";
-import { Formik, FormikActions, FormikProps, Form, Field } from "formik";
 import Button from "@material-ui/core/Button";
 import TextField from "shared-components/form/Text-field";
-import { Container, BtnContainer } from "shared-components/form/Form-styles";
 import { required } from "utils/validate";
+import { withTheme } from "@material-ui/core/styles";
+import { Formik, FormikActions, FormikProps, Form, Field } from "formik";
+import { Container, BtnContainer } from "shared-components/form/Form-styles";
 
 interface ILoginFormValues {
   email: string;
   password: string;
 }
 
-export const Login: React.SFC<{}> = () => {
+const LoginForm: React.SFC<{}> = (props: any) => {
+  console.log(props);
   return (
     <Container>
-      <h1>Login</h1>
       <Formik
         initialValues={{ email: "", password: "" }}
         onSubmit={(values: ILoginFormValues, actions: FormikActions<ILoginFormValues>) => {
@@ -43,3 +44,5 @@ export const Login: React.SFC<{}> = () => {
     </Container>
   );
 };
+
+export const Login = withTheme()(LoginForm);

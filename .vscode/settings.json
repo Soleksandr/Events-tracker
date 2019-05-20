@@ -9,7 +9,8 @@
     "interop",
     "devtools",
     "bodyparser",
-    "formik"
+    "formik",
+    "sigup"
   ],
   "eslint.autoFixOnSave": true,
   "eslint.validate": [

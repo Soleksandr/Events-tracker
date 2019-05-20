@@ -2,9 +2,7 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {},
   extends: [
-    "plugin:@typescript-eslint/recommended",
-    'prettier/@typescript-eslint',
-    'plugin:prettier/recommended'
+    "plugin:@typescript-eslint/recommended"
   ],
   plugins: [
     "react",
@@ -24,11 +22,7 @@ module.exports = {
     "@typescript-eslint/no-empty-interface": 0,
     "@typescript-eslint/camelcase": 0,
     "@typescript-eslint/no-parameter-properties": 0,
-    "@typescript-eslint/no-unused-vars": ["error", {
-      "vars": "all",
-      "args": "after-used",
-      "ignoreRestSiblings": true
-    }],
+    "@typescript-eslint/no-unused-vars": 2,
     "multiline": {
       "delimiter": "semi",
       "requireLast": true
@@ -49,5 +43,8 @@ module.exports = {
     "react/jsx-uses-react": 2,
     "semi": 2,
     "quotes": 2,
+    "pretty-imports/sorted": "warn",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   }
 };
