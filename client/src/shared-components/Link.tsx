@@ -12,7 +12,9 @@ export const Link = ({ to, children }: ILinkProps) => (
     color="inherit"
     underline="none"
     component={(props) => (
-      <RouterLink to={to} {...props} >{children}</RouterLink>
+      <RouterLink to={to}
+        {...props}
+      >{children}</RouterLink>
     )}
   />
 );

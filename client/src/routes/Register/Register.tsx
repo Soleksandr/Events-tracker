@@ -5,25 +5,33 @@ import { required } from "utils/validate";
 import { Formik, FormikActions, FormikProps, Form, Field } from "formik";
 import { Container, BtnContainer } from "shared-components/form/Form-styles";
 
-interface ILoginFormValues {
+interface IRegisterFormValues {
+  name?: string;
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
-export const Login: React.SFC<{}> = (props: any) => {
+export const Register: React.SFC<{}> = (props: any) => {
   console.log(props);
   return (
     <Container>
-      <h1>Login</h1>
+      <h1>Registry User</h1>
       <Formik
-        initialValues={{ email: "", password: "" }}
-        onSubmit={(values: ILoginFormValues, actions: FormikActions<ILoginFormValues>) => {
+        initialValues={{ email: "", password: "", name: "", confirmPassword: "" }}
+        onSubmit={(values: IRegisterFormValues, actions: FormikActions<IRegisterFormValues>) => {
           console.log({ values, actions });
           actions.setSubmitting(false);
         }}
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        render={(formikBag: FormikProps<ILoginFormValues>) => (
+        render={(formikBag: FormikProps<IRegisterFormValues>) => (
           <Form>
+            <Field name="name"
+              component={TextField}
+              validate={required}
+              label="Name"
+              fullWidth
+            />
             <Field name="email"
               type="email"
               component={TextField}
@@ -39,12 +47,20 @@ export const Login: React.SFC<{}> = (props: any) => {
               label="*Password"
               fullWidth
             />
+            <Field
+              name="confirmPassword"
+              type="password"
+              component={TextField}
+              validate={required}
+              label="*Confirm Password"
+              fullWidth
+            />
             <BtnContainer>
               <Button type="submit"
                 variant="contained"
                 color="primary"
               >
-                Log In
+                Register
               </Button>
             </BtnContainer>
           </Form>

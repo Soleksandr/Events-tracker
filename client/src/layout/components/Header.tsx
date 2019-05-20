@@ -88,7 +88,7 @@ export const Header: React.SFC<IAppBar> = props => {
               onClose={handleClose}
             >
               <MenuItem onClick={moveTo("/login")}>Log In</MenuItem>
-              <MenuItem onClick={moveTo("/sigup")}>Sign Up</MenuItem>
+              <MenuItem onClick={moveTo("/register")}>Register</MenuItem>
             </Menu>
           </div>
         </Toolbar>
