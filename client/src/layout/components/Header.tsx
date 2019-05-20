@@ -8,6 +8,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import { Link } from "../../shared-components/Link";
 import { withRouter, RouteComponentProps } from "react-router";
 import { withStyles, WithStyles } from "@material-ui/core/styles";
 
@@ -57,7 +58,7 @@ export const Header: React.SFC<IAppBar> = props => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" color="inherit" className={classes.grow}>
-            Events Tracker
+            <Link to="/">Events Tracker</Link>
           </Typography>
           <div>
             <IconButton
