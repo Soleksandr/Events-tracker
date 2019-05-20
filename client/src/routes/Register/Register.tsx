@@ -1,9 +1,10 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "shared-components/form/Text-field";
+import { messages } from "sdk/constants";
 import { required } from "utils/validate";
 import { Formik, FormikActions, FormikProps, Form, Field } from "formik";
-import { Container, BtnContainer } from "shared-components/form/Form-styles";
+import { Container, BtnContainer } from "shared-components/form/Form-styles";;
 
 interface IRegisterFormValues {
   name?: string;
@@ -12,23 +13,31 @@ interface IRegisterFormValues {
   confirmPassword: string;
 }
 
+export const isPasswordsEqual = (values: IRegisterFormValues) => {
+  if (values.password !== values.confirmPassword) {
+    return {
+      confirmPassword: messages.PASSWORDS_DIFFERENT
+    };
+  }
+};
+
 export const Register: React.SFC<{}> = (props: any) => {
   console.log(props);
   return (
     <Container>
-      <h1>Registry User</h1>
+      <h1>Register User</h1>
       <Formik
         initialValues={{ email: "", password: "", name: "", confirmPassword: "" }}
         onSubmit={(values: IRegisterFormValues, actions: FormikActions<IRegisterFormValues>) => {
           console.log({ values, actions });
           actions.setSubmitting(false);
         }}
+        validate={isPasswordsEqual}
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         render={(formikBag: FormikProps<IRegisterFormValues>) => (
           <Form>
             <Field name="name"
               component={TextField}
-              validate={required}
               label="Name"
               fullWidth
             />
