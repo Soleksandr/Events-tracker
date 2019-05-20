@@ -24,7 +24,13 @@ const LoginForm: React.SFC<{}> = (props: any) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         render={(formikBag: FormikProps<ILoginFormValues>) => (
           <Form>
-            <Field name="email" type="email" component={TextField} validate={required} label="*Email" fullWidth />
+            <Field name="email"
+              type="email"
+              component={TextField}
+              validate={required}
+              label="*Email"
+              fullWidth
+            />
             <Field
               name="password"
               type="password"
@@ -34,7 +40,9 @@ const LoginForm: React.SFC<{}> = (props: any) => {
               fullWidth
             />
             <BtnContainer>
-              <Button type="submit" variant="contained" color="primary">
+              <Button type="submit"
+                variant="contained"
+                color="primary">
                 Log In
               </Button>
             </BtnContainer>

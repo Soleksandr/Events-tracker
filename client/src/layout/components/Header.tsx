@@ -28,7 +28,7 @@ const styles = {
 };
 
 export const Header: React.SFC<IAppBar> = props => {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const [ anchorEl, setAnchorEl ] = React.useState<HTMLElement | null>(null);
 
   const open = Boolean(anchorEl);
   const { classes, history: { push } } = props;
@@ -54,10 +54,14 @@ export const Header: React.SFC<IAppBar> = props => {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+          <IconButton className={classes.menuButton}
+            color="inherit"
+            aria-label="Menu">
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" color="inherit" className={classes.grow}>
+          <Typography variant="h6"
+            color="inherit"
+            className={classes.grow}>
             <Link to="/">Events Tracker</Link>
           </Typography>
           <div>

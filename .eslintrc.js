@@ -41,10 +41,14 @@ module.exports = {
     "no-duplicate-imports": 2,
     "react/jsx-uses-vars": 2,
     "react/jsx-uses-react": 2,
+    "react/jsx-max-props-per-line": [1, { "when": "always" }],
+    "react/jsx-closing-bracket-location": [1, "tag-aligned"],
     "semi": 2,
     "quotes": 2,
     "pretty-imports/sorted": "warn",
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "object-curly-spacing": ["error", "always"],
+    "array-bracket-spacing": ["error", "always"]
   }
 };
