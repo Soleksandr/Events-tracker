@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 
 export const Container = styled.div({
+  width: 450,
   position: "absolute",
   left: "50%",
   top: "50%",
