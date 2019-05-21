@@ -1,1 +1,1 @@
-export { IUser } from "./User";
+export { ICreateUser, ILoginUser, IUser } from "./user";
