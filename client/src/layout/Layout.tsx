@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "./components/Header";
+import Header from "./components/Header-container";
 
 const Layout: React.SFC<{ children: React.ReactElement }> = ({ children }) => {
   return (

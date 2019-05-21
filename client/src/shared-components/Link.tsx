@@ -16,5 +16,7 @@ export const Link = ({ to, children }: ILinkProps) => (
         {...props}
       >{children}</RouterLink>
     )}
-  />
+  >
+    {children}
+  </MuiLink>
 );

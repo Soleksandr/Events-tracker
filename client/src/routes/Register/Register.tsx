@@ -1,40 +1,47 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "shared-components/form/Text-field";
 import { messages } from "sdk/constants";
 import { required } from "utils/validate";
-import { Formik, FormikActions, FormikProps, Form, Field } from "formik";
-import { Container, BtnContainer } from "shared-components/form/Form-styles";;
+import { ICreateUser, IUser } from "sdk/models";
+import { Formik, FormikActions, Form, Field } from "formik";
+import { withRouter, RouteComponentProps } from "react-router-dom";
+import { Container, BtnContainer } from "shared-components/form/Form-styles";
 
-interface IRegisterFormValues {
-  name?: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
+export interface IRegisterProps extends RouteComponentProps {
+  createUser: (data: ICreateUser) => any;
+  user: IUser;
 }
 
-export const isPasswordsEqual = (values: IRegisterFormValues) => {
-  if (values.password !== values.confirmPassword) {
-    return {
-      confirmPassword: messages.PASSWORDS_DIFFERENT
-    };
-  }
-};
+const RegisterForm: React.SFC<IRegisterProps> = ({ user, createUser, history }) => {
+  useEffect(() => {
+    if (user) {
+      history.push("/");
+    }
+  });
+  const checkPasswords = (values: ICreateUser) => {
+    if (values.password !== values.confirmPassword) {
+      return {
+        confirmPassword: messages.PASSWORDS_DIFFERENT
+      };
+    }
+  };
 
-export const Register: React.SFC<{}> = (props: any) => {
-  console.log(props);
+  const submitFormHandler = async (values: ICreateUser, actions: FormikActions<ICreateUser>) => {
+    createUser(values);
+    actions.setSubmitting(false);
+  };
+
+  const initialValues = { email: "", password: "", name: "", confirmPassword: "" };
+
   return (
     <Container>
       <h1>Register User</h1>
       <Formik
-        initialValues={{ email: "", password: "", name: "", confirmPassword: "" }}
-        onSubmit={(values: IRegisterFormValues, actions: FormikActions<IRegisterFormValues>) => {
-          console.log({ values, actions });
-          actions.setSubmitting(false);
-        }}
-        validate={isPasswordsEqual}
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        render={(formikBag: FormikProps<IRegisterFormValues>) => (
+        initialValues={initialValues}
+        onSubmit={submitFormHandler}
+        validate={checkPasswords}
+        render={() => (
           <Form>
             <Field name="name"
               component={TextField}
@@ -78,3 +85,5 @@ export const Register: React.SFC<{}> = (props: any) => {
     </Container>
   );
 };
+
+export const Register = withRouter(RegisterForm);

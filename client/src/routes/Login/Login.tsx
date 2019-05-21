@@ -1,28 +1,38 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "shared-components/form/Text-field";
 import { required } from "utils/validate";
-import { Formik, FormikActions, FormikProps, Form, Field } from "formik";
+import { ILoginUser, IUser } from "sdk/models";
+import { Formik, FormikActions, Form, Field } from "formik";
+import { withRouter, RouteComponentProps } from "react-router-dom";
 import { Container, BtnContainer } from "shared-components/form/Form-styles";
 
-interface ILoginFormValues {
-  email: string;
-  password: string;
+export interface ILoginProps extends RouteComponentProps {
+  loginUser: (data: ILoginUser) => any;
+  user: IUser;
 }
 
-export const Login: React.SFC<{}> = (props: any) => {
-  console.log(props);
+const LoginForm: React.SFC<ILoginProps> = ({ user, loginUser, history }) => {
+  useEffect(() => {
+    if (user) {
+      history.push("/");
+    }
+  });
+
+  const submitFormHandler = (values: ILoginUser, actions: FormikActions<ILoginUser>) => {
+    loginUser(values);
+    actions.setSubmitting(false);
+  };
+
+  const initialValues = { email: "", password: "" };
+
   return (
     <Container>
       <h1>Login</h1>
       <Formik
-        initialValues={{ email: "", password: "" }}
-        onSubmit={(values: ILoginFormValues, actions: FormikActions<ILoginFormValues>) => {
-          console.log({ values, actions });
-          actions.setSubmitting(false);
-        }}
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        render={(formikBag: FormikProps<ILoginFormValues>) => (
+        initialValues={initialValues}
+        onSubmit={submitFormHandler}
+        render={() => (
           <Form>
             <Field name="email"
               type="email"
@@ -53,3 +63,5 @@ export const Login: React.SFC<{}> = (props: any) => {
     </Container>
   );
 };
+
+export const Login = withRouter(LoginForm);

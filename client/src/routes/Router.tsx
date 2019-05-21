@@ -1,7 +1,6 @@
 import * as React from "react";
-import Test from "./Test/Test-container";
-import { Login } from "./Login/Login";
-import { Register } from "./Register/Register";
+import Login from "./Login/Login-container";
+import Register from "./Register/Register-container";
 import { Route, Switch } from "react-router-dom";
 
 const Routes = {
@@ -12,10 +11,6 @@ const Routes = {
 
 const Router = () => (
   <Switch>
-    <Route
-      path={Routes.test}
-      component={Test}
-    />
     <Route
       path={Routes.login}
       component={Login}
