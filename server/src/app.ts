@@ -1,11 +1,15 @@
-import path from "path";
 import Koa from "koa";
-import bodyParser from "koa-bodyparser";
-import serveStatic from "koa-static";
+import path from "path";
 import routes from "./router";
+import session from "koa-session";
+import serveStatic from "koa-static";
+import bodyParser from "koa-bodyparser";
 
 const app = new Koa();
 
+app.keys=[ process.env.KEY as string ];
+
+app.use(session(app));
 app.use(bodyParser());
 app.use(routes);
 

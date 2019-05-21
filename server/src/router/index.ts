@@ -1,9 +1,8 @@
-import Router from "koa-router";
-
-import test from "./Test";
+import users from "./Users";
+import Router from "koa-router";;
 
 const router = new Router();
 
-router.use("/api", test);
+router.use("/api", users);
 
 export default router.routes();
