@@ -1,10 +1,12 @@
 import * as types from "../action-types/users";
+import persister from "../../services/Persister";
 import { userApi } from "../../api/User";
 import { put, takeEvery } from "redux-saga/effects";
 import { ICreateUser, ILoginUser } from "sdk/models";
 
 function* createUser(action: {type: string; payload: ICreateUser }) {
   const payload = yield userApi.create(action.payload);
+  persister.persistData("user", payload);
   yield put({ type: types.USER_CREATED, payload });
 }
 
@@ -14,6 +16,7 @@ export function* watchCreateUser() {
 
 function* loginUser(action: {type: string; payload: ILoginUser }) {
   const payload = yield userApi.login(action.payload);
+  persister.persistData("user", payload);
   yield put({ type: types.USER_LOGGED_IN, payload });
 }
 

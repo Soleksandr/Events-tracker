@@ -1,4 +1,5 @@
 import * as types from "../action-types/users";
+import persister from "../../services/Persister";
 import { ICreateUser, ILoginUser } from "sdk/models";
 
 export const createUser = (data: ICreateUser) => ({
@@ -11,6 +12,10 @@ export const loginUser = (data: ILoginUser) => ({
   payload: data
 });
 
-export const logOutUser = () => ({
-  type: types.USER_LOGGED_OUT
-});
+export const logOutUser = () => {
+  persister.removeData("user");
+
+  return {
+    type: types.USER_LOGGED_OUT
+  };
+};

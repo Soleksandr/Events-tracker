@@ -1,13 +1,13 @@
+import * as serviceWorker from "./serviceWorker";
+import App from "./App";
 import React from "react";
 import ReactDOM from "react-dom";
+import rootSaga from "./redux/sagas";
+import reducer from "./redux/reducers";
+import createSagaMiddleware from "redux-saga";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
-import createSagaMiddleware from "redux-saga";
 import { composeWithDevTools } from "redux-devtools-extension";
-import rootSaga from "./redux/sagas";
-import App from "./App";
-import reducer from "./redux/reducers";
-import * as serviceWorker from "./serviceWorker";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -17,7 +17,7 @@ sagaMiddleware.run(rootSaga);
 
 const Tree = () => (
   <Provider store={store}>
-    <App />
+    <App dispatch={store.dispatch} />
   </Provider>
 );
 
