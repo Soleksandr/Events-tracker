@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
+import { Centered } from "../common/Centered";
 
-export const Container = styled.div({
+export const Container = styled(Centered)({
   width: 450,
   position: "absolute",
   left: "50%",
