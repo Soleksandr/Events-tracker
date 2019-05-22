@@ -1,15 +1,16 @@
 import React from "react";
 import { IUser } from "sdk/models";
-import { Description } from "./components/Description";
+import { Table } from "./components/Table/Table";
+import { Description } from "./components/Description/Description";;
 
 export interface IHomeProps {
   user: IUser;
 }
 
-export const Home = () => {
+export const Home = ({ user }: IHomeProps) => {
   return (
-    <div>
-      <Description />
-    </div>
+    user
+      ? <Table />
+      : <Description />
   );
 };

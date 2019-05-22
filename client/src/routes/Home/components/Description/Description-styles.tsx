@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Centered } from "../../../shared-components/common/Centered";
+import { Centered } from "../../../../shared-components/common/Centered";
 
 export const Container = styled(Centered)({
   maxWidth: "80%",
