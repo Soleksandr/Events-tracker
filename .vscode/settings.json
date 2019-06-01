@@ -10,6 +10,8 @@
     "devtools",
     "bodyparser",
     "formik",
+    "labelledby",
+    "luxon",
     "sigup"
   ],
   "eslint.autoFixOnSave": true,

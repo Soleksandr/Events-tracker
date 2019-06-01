@@ -16,9 +16,11 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "baseUrl": ".",
+    "composite": true
   },
   "include": [
     "models",
-    "constants.ts"
-  ]
+    "constants.ts",
+    "index.ts"
+  ],
 }

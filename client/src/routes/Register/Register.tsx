@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "shared-components/form/Text-field";
-import { messages } from "sdk/constants";
+import { messages } from "sdk";
 import { required } from "utils/validate";
 import { ICreateUser, IUser } from "sdk/models";
 import { Formik, FormikActions, Form, Field } from "formik";

@@ -13,8 +13,6 @@ export default mapProps<TextFieldProps, ITextFieldProps>(
     return {
       value,
       label: label.toUpperCase(),
-      margin: "normal",
-      InputLabelProps: { shrink: true },
       error: Boolean(showError && errors[field.name]),
       helperText: showError ? errors[field.name] : undefined,
       ...field,
