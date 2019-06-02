@@ -17,9 +17,21 @@ export function* watchCreateUser() {
 function* loginUser(action: {type: string; payload: ILoginUser }) {
   const payload = yield userApi.login(action.payload);
   persister.persistData("user", payload);
+
   yield put({ type: types.USER_LOGGED_IN, payload });
 }
 
 export function* watchLoginUser() {
   yield takeEvery(types.LOGIN_USER, loginUser);
+}
+
+function* logOutUser() {
+  const payload = yield userApi.logout();
+  persister.removeData("user");
+
+  yield put({ type: types.USER_LOGGED_OUT, payload });
+}
+
+export function* watchLogoutUser() {
+  yield takeEvery(types.USER_LOGOUT, logOutUser);
 }
