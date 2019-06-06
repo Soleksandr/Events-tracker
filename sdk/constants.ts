@@ -13,7 +13,7 @@ export enum Week {
   SUNDAY,
 };
 
-export enum WeekInAMonth {
+export enum WeeksInAMonth {
   FIRST,
   SECOND,
   THIRD,
@@ -34,3 +34,6 @@ export enum Months {
   NOVEMBER,
   DECEMBER,
 };
+
+export const USERS = "Users";
+export const EVENTS = "Events";

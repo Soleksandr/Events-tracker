@@ -33,8 +33,8 @@ export const Picker: React.SFC<IPickerProps> =({ field, form, pickerType, label,
       value={field.value}
       helperText={currentError}
       error={Boolean(currentError)}
-      onError={(_, error) => form.setFieldError(field.name, error)}
-      onChange={date => form.setFieldValue(field.name, date.toString(), true)}
+      onError={(_, error) => form.setFieldError(field.name, error as any)}
+      onChange={date => form.setFieldValue(field.name, date && date.toString(), true)}
       {...other}
     />
   );

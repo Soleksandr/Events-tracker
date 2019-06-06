@@ -1,5 +1,6 @@
 import React from "react";
 import TextField from "shared-components/form/Text-field";
+import { IEvent } from "sdk/models";
 import { Formik, Field } from "formik";
 import { MonthsField } from "./Months";
 import { WeekDaysField } from "./WeekDays";
@@ -12,17 +13,19 @@ import { CheckboxField } from "shared-components/form/Checkbox";
 interface IEventForm {
   isEventFormOpen: boolean;
   closeEventForm: () => any;
+  createEvent: (data: IEvent) => any;
 }
 
-export const EventForm = ({ isEventFormOpen, closeEventForm }: IEventForm) => {
+export const EventForm = ({ isEventFormOpen, closeEventForm, createEvent }: IEventForm) => {
   const submitForm = (handleSubmit: any) => (e: React.FormEvent<HTMLInputElement>) => {
     closeEventForm();
     handleSubmit(e);
   };
 
 
-  const initialValues = {
-    eventStartDate: new Date(),
+  const initialValues: IEvent = {
+    description: "",
+    // eventStartDate: null,
     isDailyEvent: false,
     eventTime: null,
     weekDays: [],
@@ -35,7 +38,7 @@ export const EventForm = ({ isEventFormOpen, closeEventForm }: IEventForm) => {
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={(values) => console.log("-- new event values --", values)}
+      onSubmit={createEvent}
       render={({ handleSubmit, values }) => (
         <Modal open={isEventFormOpen}
           onCancel={closeEventForm}
@@ -51,7 +54,7 @@ export const EventForm = ({ isEventFormOpen, closeEventForm }: IEventForm) => {
               margin="normal"
               label="Event Description"
             />
-            <Field
+            {/* <Field
               autoOk
               name="eventStartDate"
               pickerType="date"
@@ -61,7 +64,7 @@ export const EventForm = ({ isEventFormOpen, closeEventForm }: IEventForm) => {
               disableFuture={false}
               label="Event start date"
               component={Picker}
-            />
+            /> */}
             <Field
               autoOk
               name="eventTime"

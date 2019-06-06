@@ -19,4 +19,9 @@ router.post("/login", async ctx => {
   ctx.body = user;
 });
 
+router.get("/logout", async ctx => {
+  ctx.session = null;
+  ctx.body = null;
+});
+
 export default router.routes();

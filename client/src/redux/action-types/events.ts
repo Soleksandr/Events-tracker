@@ -1,0 +1,5 @@
+export const CREATE_EVENT = "CREATE_EVENT";
+export const EVENT_CREATED = "EVENT_CREATED";
+
+export const RECEIVE_EVENTS = "RECEIVE_EVENTS";
+export const EVENTS_RECEIVED = "EVENTS_RECEIVED";

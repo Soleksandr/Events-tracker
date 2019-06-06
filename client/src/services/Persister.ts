@@ -1,6 +1,6 @@
 class Persister {
   public persistData (key: string, data: any) {
-    localStorage.setItem(key, data);
+    localStorage.setItem(key, JSON.stringify(data));
   }
 
   public removeData (key: string) {
@@ -8,7 +8,8 @@ class Persister {
   }
 
   public getData (key: string) {
-    return localStorage.getItem(key);
+    // @ts-ignore
+    return JSON.parse(localStorage.getItem(key));
   }
 }
 

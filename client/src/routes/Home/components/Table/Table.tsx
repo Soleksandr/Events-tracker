@@ -1,33 +1,34 @@
-import React from "react";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import MuiTable from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
+import React, { useState, useEffect } from "react";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
+import { IUser } from "sdk";
 import { styles } from "./Table-styles";
 import { EventForm } from "../Event-form/Event-form";
-import { withStyles, WithStyles } from "@material-ui/core/styles";
+import { withStyles, WithStyles } from "@material-ui/core/styles";;
 
-let id = 0;
-function createData(name: any) {
-  id += 1;
-  return { id, name, calories: Date.now(), fat: Date.now() };
+export interface ITableRows {
+  id: string;
+  title: string;
+  createdAt: Date;
+  nextEventDate: Date;
 }
 
-const rows = [
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-];
+export interface ITableProps extends WithStyles {
+  createEvent: (data: any) => any;
+  getAllEvents: () => any;
+  events: ITableRows[];
+  user: IUser;
+}
 
-const SimpleTable: React.SFC<WithStyles> = (props) => {
-  const { classes } = props;
+const SimpleTable: React.SFC<ITableProps> = (props) => {
+  const { classes, user, getAllEvents } = props;
 
-  const [ isEventFormOpen, setEventFormOpen ] = React.useState(false);
+  const [ isEventFormOpen, setEventFormOpen ] = useState(false);
 
   const openEventForm = () => {
     setEventFormOpen(true);
@@ -36,6 +37,10 @@ const SimpleTable: React.SFC<WithStyles> = (props) => {
   const closeEventForm = () => {
     setEventFormOpen(false);
   };
+
+  useEffect(() => {
+    getAllEvents();
+  }, [ getAllEvents, user ]);
 
   return (
     <>
@@ -58,15 +63,15 @@ const SimpleTable: React.SFC<WithStyles> = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map(row => (
+              {props.events.map(row => (
                 <TableRow key={row.id}>
                   <TableCell component="th"
                     scope="row"
                   >
-                    {row.name}
+                    {row.title}
                   </TableCell>
-                  <TableCell align="right">{row.calories}</TableCell>
-                  <TableCell align="right">{row.fat}</TableCell>
+                  <TableCell align="right">{row.createdAt}</TableCell>
+                  <TableCell align="right">{row.nextEventDate}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -76,6 +81,7 @@ const SimpleTable: React.SFC<WithStyles> = (props) => {
       <EventForm
         isEventFormOpen={isEventFormOpen}
         closeEventForm={closeEventForm}
+        {...props}
       />
     </>
   );

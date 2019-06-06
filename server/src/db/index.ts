@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
 import { asyncCall } from "../lib/async";
-import { usersSchema, IUserModel } from "./schemas/Users";;
+import { eventsSchema } from "./schemas/Events";
+import { USERS, EVENTS, IEventSchema } from "sdk";
+import { usersSchema, IUserModel } from "./schemas/Users";
 
 class Database {
   public users: mongoose.Model<IUserModel>;
+  public events: mongoose.Model<IEventSchema>;
   public db: mongoose.Connection;
 
   async connect () {
@@ -27,7 +30,8 @@ class Database {
   }
 
   private _createModels () {
-    this.users = mongoose.model("Users", usersSchema);
+    this.users = mongoose.model(USERS, usersSchema);
+    this.events = mongoose.model(EVENTS, eventsSchema);
   }
 }
 

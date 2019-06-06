@@ -5,12 +5,15 @@ import { Description } from "./components/Description/Description";;
 
 export interface IHomeProps {
   user: IUser;
+  createEvent: (data: any) => any;
+  getAllEvents: () => any;
+  events: any;
 }
 
-export const Home = ({ user }: IHomeProps) => {
+export const Home = (props: IHomeProps) => {
   return (
-    user
-      ? <Table />
+    props.user
+      ? <Table { ...props } />
       : <Description />
   );
 };
