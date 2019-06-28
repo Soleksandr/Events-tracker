@@ -1,9 +1,8 @@
+// @TODO refactor this file
 import { DateTime } from "luxon";
 import { IEventSchema } from "sdk";
 
 interface IDateDescriptor extends Pick<IEventSchema,
-// "createdAt" |
-// "eventTime" |
 "isDailyEvent" |
 "monthDays" |
 "months" |
@@ -33,134 +32,162 @@ export class Event {
       createdAt: this.formatDate(createdAt),
       title: description
     };
-    console.log("----- eventTime ------- ", eventTime);
     this.dateDescriptor = dateData;
     this.createdAt = DateTime.fromISO(createdAt);
     this.eventTime = this.getTime(DateTime.fromISO(eventTime, { zone: "utc" }));
     this.now = DateTime.local().toUTC();
-    console.log("------this.eventTime------ ", this.eventTime);
   }
 
   public getEvent () {
-    const dateWithProperTime = this.setTime();
-    const dateWithProperDay = this.setDay(dateWithProperTime);
-
-    return this.getFullEventData(dateWithProperDay);
-  }
-
-  private setTime () {
-    const date = this.now.set(this.eventTime);
-
-    return date.diff(this.now).milliseconds > 0
-      ? date
-      : date.plus({ days: 1 });
-  }
-
-  private setDay (date: DateTime) {
     if (this.dateDescriptor.isDailyEvent) {
-      return date;
+      return this.getFullEventData(this.handleDailyEvent());
     }
+    const nextEventYearTime = this.now.set(this.eventTime);
 
-    if (this.dateDescriptor.monthDays) {
-      return this.setDayByMonthDays(date, this.dateDescriptor.monthDays);
-    }
-
-    // remove it
-    return date;
+    return this.getEventDate(nextEventYearTime);
   }
 
-  private setDayByMonthDays (date: DateTime, monthDays: number[]) {
-    const monthDay = monthDays.find(day => day === date.day);
+  private getEventDate (nextEventYearTime: DateTime): any {
+    let date: DateTime | null = null;
 
+    this.dateDescriptor.months.some(month => {
+      if (nextEventYearTime.hasSame(this.now, "year")) {
+        if (month + 1 === this.now.month) {
+          date = this.getDateForCurrentMonth(nextEventYearTime.set({ month: month + 1 }));
+        }
 
-  }
+        if (month + 1 > this.now.month) {
+          date = this.getDateForFutureMonth(nextEventYearTime.set({ month: month + 1 }));
+        }
+      } else {
+        date = this.getDateForFutureYear(nextEventYearTime.set({ month: month + 1 }));
+      }
 
-  private getMonth (startedFrom: number) {
-    if (startedFrom) {
-
-    }
-
-    // return this.dateDescriptor.months.find(month => )
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  private getNextEventDate () {
-    if (this.dateDescriptor.weekDays) {
-      return this.getDateByWeekDays();
-    }
-    // @TODO there should be proper handler
-    return this.getDateByWeekDays();
-
-  }
-
-  private getDateByWeekDays () {
-    if (this.dateDescriptor.weeksInAMonth) {
-      // return this.getDateByWeeksInAMonth()
-    }
-
-    const dateWithYear = this.getNextYear();
-    const dateWithMonth = this.getNextMonth(dateWithYear);
-    // const dateWithDay = this.getNextDay(dateWithMonth);
-
-    return dateWithMonth;
-  }
-
-  private getNextYear () {
-    const waitYears = (this.now.year - this.createdAt.year) % this.dateDescriptor.onceInAYearNumber;
-
-    if (waitYears) {
-      return this.now.set({ year: this.now.year + waitYears });
-    }
-
-    return this.now;
-  }
-
-  private getNextMonth (dateWithYear: DateTime) {
-    const nextEventMonth = this.dateDescriptor.months
-      .sort((a, b) => a - b)
-      .find(month => month >= this.now.month);
-
-    if (nextEventMonth) {
-      return dateWithYear.set({ month: nextEventMonth + 1 });
-    }
-
-    return dateWithYear.set({
-      month: this.dateDescriptor.months[0] + 1,
-      year: dateWithYear.diff(this.now, "year").years === 0 ? this.increaseEventYear().year : dateWithYear.year
+      return !!date;
     });
+
+    return date
+      ? this.getFullEventData(date)
+      : this.getEventDate(this.now.plus({ year: 1 }).set({ ...this.eventTime }));
   }
 
-  private increaseEventYear () {
-    return this.now.set({ year: this.now.year + this.dateDescriptor.onceInAYearNumber });
-  }
+  private getDateForCurrentMonth (nextEventYearMonthTime: DateTime) {
+    let nextEventDay = null;
 
-  private increaseEventMonth (dateWithMonth: DateTime) {
-    const nextEventMonth = this.dateDescriptor.months
-      .sort((a, b) => a - b)
-      .find(month => month > this.now.month);
+    // case when days of a month are specified
+    if (this.dateDescriptor.monthDays.length) {
+      nextEventDay = this.dateDescriptor.monthDays.find(monthDay => monthDay === nextEventYearMonthTime.day);
 
-    if (nextEventMonth) {
-      return dateWithMonth.set({ month: nextEventMonth + 1 });
+      // event will be today and time does not come yet
+      if (nextEventDay && nextEventYearMonthTime.diffNow().milliseconds > 0) {
+        return nextEventYearMonthTime.set({ day: nextEventDay });
+      }
+
+      // event will be other day this month
+      nextEventDay = this.dateDescriptor.monthDays.find(monthDay => monthDay > nextEventYearMonthTime.day);
+
+      if (nextEventDay) {
+        return nextEventYearMonthTime.set({ day: nextEventDay });
+      }
+
+      // all events for this month are finished
+      return null;
     }
 
-    return dateWithMonth.set({
-      month: this.dateDescriptor.months[0] + 1,
-      year: dateWithMonth.diff(this.now, "year").years === 0 ? this.increaseEventYear().year : dateWithMonth.year
-    });
+    // case when days in a week and week in a month are specified
+    if (this.dateDescriptor.weekDays && this.dateDescriptor.weeksInAMonth) {
+      const currentWeekNumber = Math.ceil((this.now.day + this.now.set({ day: 1 }).weekday) / 7);
+
+      // as we can guarantee that any week day is repeated 4 times
+      if (currentWeekNumber > 4) {
+        return null;
+      }
+
+      const currentWeekEvent = this.dateDescriptor.weeksInAMonth.find(weekInAMonth => weekInAMonth + 1 === currentWeekNumber);
+
+      // check week day for current week
+      if (currentWeekEvent) {
+        let weekDay = nextEventYearMonthTime.diff(this.now).milliseconds > 0 &&
+          this.dateDescriptor.weekDays.find(day => day + 1 === nextEventYearMonthTime.weekday);
+
+        // current week day is one from the specified and event time does not come yet
+        if (weekDay) {
+          return nextEventYearMonthTime;
+        }
+
+        weekDay = this.dateDescriptor.weekDays.find(day => day + 1 > nextEventYearMonthTime.weekday);
+
+        // next event date later this week
+        if (weekDay) {
+          return nextEventYearMonthTime.set({ day: this.now.day + (weekDay + 1 - this.now.weekday) });
+        }
+      }
+
+      const weekNumberEvent = this.dateDescriptor.weeksInAMonth.find(weekInAMonth => weekInAMonth + 1 > currentWeekNumber);
+
+      // event will happen later this month
+      if (weekNumberEvent) {
+        const daysLeftToWeekEnd = 7 - this.now.weekday;
+        const weeksLeftToEvent = weekNumberEvent + 1 - currentWeekNumber;
+
+        return nextEventYearMonthTime.set({
+          day: this.now.day + daysLeftToWeekEnd + weeksLeftToEvent + this.dateDescriptor.weekDays[0]
+        });
+      }
+      // all events for this month finished
+      return null;
+    }
+
+    // line below is a temporal
+    return nextEventYearMonthTime;
+  }
+
+  private getDateForFutureMonth (nextEventYearMonthTime: DateTime) {
+    if (this.dateDescriptor.monthDays.length) {
+      return nextEventYearMonthTime.set({ day: this.dateDescriptor.monthDays[0] });
+    }
+
+    if (this.dateDescriptor.weekDays && this.dateDescriptor.weeksInAMonth) {
+      return nextEventYearMonthTime.set({
+        day: nextEventYearMonthTime.set({ day: 1 }).weekday > this.dateDescriptor.weekDays[0]
+          ? (this.dateDescriptor.weeksInAMonth[0] + 2) * 7 - (nextEventYearMonthTime.set({ day: 1 }).weekday - this.dateDescriptor.weekDays[0])
+          : (this.dateDescriptor.weeksInAMonth[0] + 1) * 7 - (this.dateDescriptor.weekDays[0] - nextEventYearMonthTime.set({ day: 1 }).weekday)
+      });
+    }
+
+    // temporal
+    return nextEventYearMonthTime;
+  }
+
+  private getDateForFutureYear (nextEventYearMonthTime: DateTime) {
+    if (this.dateDescriptor.monthDays.length) {
+      return nextEventYearMonthTime.set({ day: this.dateDescriptor.monthDays[0] });
+    }
+
+    if (this.dateDescriptor.weekDays && this.dateDescriptor.weeksInAMonth) {
+      return nextEventYearMonthTime.set({
+        day: (this.dateDescriptor.weeksInAMonth[0] + 1) * 7 - (7 - this.dateDescriptor.weekDays[0] + 1)
+      });
+    }
+
+    // temporal
+    return nextEventYearMonthTime;
+  }
+
+  private handleDailyEvent () {
+    const diff = this.now.diff(this.createdAt.set(this.eventTime), [ "hours" ]);
+    // @TODO simplify this
+    console.log("diff = ", diff);
+    return diff.hours < 0
+      ? this.now.set(this.eventTime)
+      : this.now.set({
+        ...this.eventTime,
+        day: this.now.plus({
+          day: this.createdAt.diffNow("millisecond").milliseconds > 0
+            ? this.createdAt.day
+            : 1
+        }).day
+      });
   }
 
   private getFullEventData (nextEventDate: DateTime) {
@@ -185,299 +212,4 @@ export class Event {
       second: date.second,
     };
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // public getEvent () {
-  //   if (this.dateDescriptor.isDailyEvent) {
-  //     // calculate next event date
-  //   }
-
-  //   const nextEventDate = this.getNextEventDate();
-
-  //   return this.getFullEventData(nextEventDate);
-  // }
-
-  // private getNextEventDate () {
-  //   if (this.dateDescriptor.weekDays) {
-  //     return this.getDateByWeekDays();
-  //   }
-  //   // @TODO there should be proper handler
-  //   return this.getDateByWeekDays();
-
-  // }
-
-  // private getDateByWeekDays () {
-  //   if (this.dateDescriptor.weeksInAMonth) {
-  //     // return this.getDateByWeeksInAMonth()
-  //   }
-
-  //   const dateWithYear = this.getNextYear();
-  //   const dateWithMonth = this.getNextMonth(dateWithYear);
-  //   const dateWithDay = this.getNextDay(dateWithMonth);
-
-  //   return dateWithMonth;
-  // }
-
-  // private getNextYear () {
-  //   const waitYears = (this.now.year - this.createdAt.year) % this.dateDescriptor.onceInAYearNumber;
-
-  //   if (waitYears) {
-  //     return this.now.set({ year: this.now.year + waitYears });
-  //   }
-
-  //   return this.now;
-  // }
-
-  // private getNextMonth (dateWithYear: DateTime) {
-  //   const nextEventMonth = this.dateDescriptor.months
-  //     .sort((a, b) => a - b)
-  //     .find(month => month >= this.now.month);
-
-  //   if (nextEventMonth) {
-  //     return dateWithYear.set({ month: nextEventMonth + 1 });
-  //   }
-
-  //   return dateWithYear.set({
-  //     month: this.dateDescriptor.months[0] + 1,
-  //     year: dateWithYear.diff(this.now, "year").years === 0 ? this.increaseEventYear().year : dateWithYear.year
-  //   });
-  // }
-
-  // private getNextDayByDaysOfWeek (dateWithMonth: DateTime) {
-
-  // }
-
-  // private increaseEventYear () {
-  //   return this.now.set({ year: this.now.year + this.dateDescriptor.onceInAYearNumber });
-  // }
-
-  // private increaseEventMonth (dateWithMonth: DateTime) {
-  //   const nextEventMonth = this.dateDescriptor.months
-  //     .sort((a, b) => a - b)
-  //     .find(month => month > this.now.month);
-
-  //   if (nextEventMonth) {
-  //     return dateWithMonth.set({ month: nextEventMonth + 1 });
-  //   }
-
-  //   return dateWithMonth.set({
-  //     month: this.dateDescriptor.months[0] + 1,
-  //     year: dateWithMonth.diff(this.now, "year").years === 0 ? this.increaseEventYear().year : dateWithMonth.year
-  //   });
-  // }
-
-  // private getFullEventData (nextEventDate: DateTime) {
-  //   return {
-  //     ...this.commonEventData,
-  //     nextEventDate: nextEventDate.toLocal().toRFC2822()
-  //   };
-  // }
-
-  // private formatDate (date: DateTime | string) {
-  //   if (typeof date === "string") {
-  //     return DateTime.fromISO(date).toLocal().toRFC2822();
-  //   }
-
-  //   return date.toLocal().toRFC2822();
-  // }
-
-  // private getTime (date: DateTime) {
-  //   return {
-  //     hour: date.hour,
-  //     minute: date.minute,
-  //     second: date.second
-  //   };
-  // }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { DateTime } from "luxon";
-// import { IEventSchema } from "sdk";
-
-// interface IDateDescriptor extends Pick<IEventSchema,
-// // "createdAt" |
-// // "eventTime" |
-// "isDailyEvent" |
-// "monthDays" |
-// "months" |
-// "onceInAYearNumber" |
-// "weekDays" |
-// "weeksInAMonth"
-// > {}
-
-// export class Event {
-//   // private nextDay: number | string;
-//   private DateDescriptor: IDateDescriptor
-//   private commonEventData: {
-//     id: any;
-//     createdAt: IEventSchema["createdAt"];
-//     title: IEventSchema["description"];
-//   }
-//   private createdAt: DateTime;
-//   private eventTime: DateTime;
-
-//   // private isWeekDay: boolean;
-
-//   constructor ({ createdAt, description, _id, createdAt, eventTime, ...dateData }: IEventSchema) {
-//     this.dateDescriptor = dateData;
-//     this.commonEventData = {
-//       id: _id,
-//       createdAt: this.formatDate(createdAt),
-//       title: description
-//     };
-//     this.createdAt = DateTime.fromISO(createdAt);
-//     this.eventTime = DateTime.fromISO(eventTime);
-//   }
-
-//   public getEvent () {
-//     if (this.dateDescriptor.isDailyEvent) {
-//       return this.getFullEventData(this.handleDailyEvent());
-//     }
-
-//     let nextDate = DateTime.utc().set({
-//       hour: this.eventTime.hour,
-//       minute: this.eventTime.minute,
-//       second: this.eventTime.second
-//     });
-
-//     nextDate = this.setNextEventYear(this.dateDescriptor, nextDate);
-//     // nextDate = this.setNextEventMonths(this.dateDescriptor, nextDate);
-
-//     return this.getFullEventData(nextDate);
-//   }
-
-//   public getCurrentDateInfo () {
-//     return DateTime.local();
-//   }
-
-//   private getFullEventData (nextEventDate: DateTime) {
-//     return {
-//       ...this.commonEventData,
-//       nextEventDate: nextEventDate.toLocal().toRFC2822()
-//     };
-//   }
-
-// private handleDailyEvent () {
-//   const diff = this.now.diff(this.createdAt.set(this.eventTime), [ "hours" ]);
-//   // @TODO simplify this
-//   return diff.hours < 0
-//     ? this.now.set(this.eventTime)
-//     : this.now.set({
-//       ...this.eventTime,
-//       day: this.now.plus({
-//         day: this.createdAt.diffNow("millisecond").milliseconds > 0
-//           ? this.createdAt.day
-//           : 1
-//       }).day });
-// }
-
-//     return diff.hours < 0
-//       ? this.now.set(time)
-//       : this.now.set({
-//         ...time,
-//         day: this.now.plus({
-//           day: this.createdAt.diffNow("millisecond").milliseconds > 0
-//             ? this.createdAt.day
-//             : 1
-//         }).day });
-//   }
-
-//   // private handleWeekDaysEvent (event: IDateDescriptor) {
-//   //   if (event.weeksInAMonth.length) {
-
-//   //   }
-//   // }
-
-//   private formatDate (date: DateTime | string) {
-//     if (typeof date === "string") {
-//       return DateTime.fromISO(date).toLocal().toRFC2822();
-//     }
-
-//     return date.toLocal().toRFC2822();
-//   }
-
-//   private get now () {
-//     return DateTime.local().toUTC();
-//   }
-
-//   // private getDayOfDayWeek (weekDay: number, number: number) {
-//   //   const month
-//   // }
-//   private setNextEventYear (event: IDateDescriptor, nextDate: DateTime) {
-//     const startYear = this.createdAt.get("year");
-//     const currentYear = this.now.get("year");
-
-//     if (startYear > currentYear) {
-//       return nextDate.set({ year: startYear });
-//     }
-
-//     const waitYears = event.onceInAYearNumber - ((currentYear - startYear) % event.onceInAYearNumber);
-//     // console.log("-------- waitYears ----------- ", waitYears);
-//     // console.log("-------- startYear ----------- ", startYear);
-//     // console.log("-------- currentYear ----------- ", currentYear);
-//     // console.log("-------- startYear > currentYear ----------- ", startYear > currentYear);
-//     if (waitYears) {
-//       return nextDate.plus({ years: waitYears });
-//     }
-
-//     return nextDate;
-//   }
-
-//   private setNextEventMonths (event: IDateDescriptor, nextDate: DateTime) {
-//     const currentMonth = this.now.get("month");
-//     const nextEventMonth = event.months
-//       .sort((a, b) => a - b)
-//       .find(month => month >= currentMonth);
-//     // console.log("----- next event month -------- ", nextEventMonth);
-//     // console.log("----- event -------- ", event);
-//     if (nextEventMonth) {
-//       return nextDate.set({ month: nextEventMonth + 1 });
-//     }
-
-//     return nextDate.set({
-//       year: nextDate.plus({ years: event.onceInAYearNumber }).get("year"),
-//       month: event.months[0]
-//     });
-//   }
-
-//   // private getMax (arr: number[]) {
-//   //   return Math.max.apply(null, arr);
-//   // }
-
-//   // private sortNumber (a, b)
-// }
-
-// // export const eventService = new Event();
