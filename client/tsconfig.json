@@ -21,6 +21,9 @@
     "baseUrl": "./src"
   },
   "include": [
-    "src"
-  ]
+    "src", "../sdk/**/*.ts"
+  ],
+  "references": [
+    { "path": "../sdk" }
+]
 }

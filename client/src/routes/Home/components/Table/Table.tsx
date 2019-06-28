@@ -1,205 +1,89 @@
-import React from "react";
 import Paper from "@material-ui/core/Paper";
+import Button from "@material-ui/core/Button";
 import MuiTable from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
+import React, { useState, useEffect } from "react";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
-import { withStyles, Theme, WithStyles } from "@material-ui/core/styles";
+import { IUser } from "sdk";
+import { styles } from "./Table-styles";
+import { EventForm } from "../Event-form/Event-form";
+import { withStyles, WithStyles } from "@material-ui/core/styles";;
 
-const styles = (theme: Theme) => ({
-  root: {
-    width: "80%",
-    overflowX: "auto" as any,
-    margin: `${theme.spacing.unit * 3}px auto 0 auto`,
-  },
-  table: {
-    minWidth: 700,
-  },
-});
-
-let id = 0;
-function createData(name: any) {
-  id += 1;
-  return { id, name, calories: Date.now(), fat: Date.now() };
+export interface ITableRows {
+  id: string;
+  title: string;
+  createdAt: Date;
+  nextEventDate: Date;
 }
 
-const rows = [
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-  createData("Frozen yoghurt"),
-  createData("Ice cream sandwich"),
-  createData("Eclair"),
-  createData("Cupcake"),
-  createData("Gingerbread"),
-];
+export interface ITableProps extends WithStyles {
+  createEvent: (data: any) => any;
+  getAllEvents: () => any;
+  events: ITableRows[];
+  user: IUser;
+}
 
-const SimpleTable: React.SFC<WithStyles> = (props) => {
-  const { classes } = props;
+const SimpleTable: React.SFC<ITableProps> = (props) => {
+  const { classes, user, getAllEvents } = props;
+
+  const [ isEventFormOpen, setEventFormOpen ] = useState(false);
+
+  const openEventForm = () => {
+    setEventFormOpen(true);
+  };
+
+  const closeEventForm = () => {
+    setEventFormOpen(false);
+  };
+
+  useEffect(() => {
+    getAllEvents();
+  }, [ getAllEvents, user ]);
 
   return (
-    <Paper className={classes.root}>
-      <MuiTable className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Title</TableCell>
-            <TableCell align="right">Created At</TableCell>
-            <TableCell align="right">Next Event At</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map(row => (
-            <TableRow key={row.id}>
-              <TableCell component="th"
-                scope="row"
-              >
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </MuiTable>
-    </Paper>
+    <>
+      <div>
+        <div className={classes.toolbar}>
+          <Button variant="outlined"
+            color="primary"
+            onClick={openEventForm}
+          >
+          New Event
+          </Button>
+        </div>
+        <Paper className={classes.root}>
+          <MuiTable className={classes.table}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell align="right">Created At</TableCell>
+                <TableCell align="right">Next Event At</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {props.events.map(row => (
+                <TableRow key={row.id}>
+                  <TableCell component="th"
+                    scope="row"
+                  >
+                    {row.title}
+                  </TableCell>
+                  <TableCell align="right">{row.createdAt}</TableCell>
+                  <TableCell align="right">{row.nextEventDate}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </MuiTable>
+        </Paper>
+      </div>
+      <EventForm
+        isEventFormOpen={isEventFormOpen}
+        closeEventForm={closeEventForm}
+        {...props}
+      />
+    </>
   );
 };
 

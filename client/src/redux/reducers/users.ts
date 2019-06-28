@@ -10,7 +10,9 @@ export default handleActions<IUser | null>(
     [types.USER_LOGGED_IN]: (_, { payload }) => {
       return payload;
     },
-    [types.USER_LOGGED_OUT]: () => null
+    [types.USER_LOGGED_OUT]: (_, { payload }) => {
+      return payload;
+    }
   },
   null
 );
