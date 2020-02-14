@@ -12,7 +12,7 @@
     "koa-static": "^5.0.0",
     "mongoose": "^5.5.9",
     "sdk": "0.0.1",
-    "yarn": "^1.16.0"
+    "yarn": "^1.22.0"
   },
   "scripts": {
     "start": "node -r dotenv/config build dotenv_config_path=../.env",
@@ -30,6 +30,6 @@
     "@types/mongoose": "^5.5.1",
     "add": "^2.0.6",
     "ts-node-dev": "^1.0.0-pre.39",
-    "yarn": "^1.16.0"
+    "yarn": "^1.22.0"
   }
 }
